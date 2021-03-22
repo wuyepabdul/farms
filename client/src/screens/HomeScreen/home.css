@@ -1,0 +1,16 @@
+.home-container {
+  margin-bottom: 10rem;
+  height: 100vh;
+}
+.display-flex {
+  display: flex;
+}
+.card-width {
+  width: 18rem;
+}
+
+.product-image {
+  width: 100%;
+  max-height: 8rem;
+  object-fit: cover;
+}
