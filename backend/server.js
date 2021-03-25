@@ -1,26 +1,22 @@
-const express = require("express");
-
-const dotenv = require("dotenv");
-const dbConnection = require("./config/connection");
-const products = require("./products");
+import express from "express";
+import dotenv from "dotenv";
+import dbConnection from "./config/connection.js";
+import productRoute from "./routes/productRoutes.js";
+import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 
 dotenv.config();
+
 const app = express();
 
 /* ***************************************************MIDDLEWARES************************************* */
+dbConnection();
 
 app.use(express.json());
 
-app.get("/api/products", (req, res) => {
-  res.json(products);
-});
+app.use("/api/products", productRoute);
 
-app.get("/api/products/:id", (req, res) => {
-  const product = products.find((p) => p._id === req.params.id);
-  res.json(product);
-});
-
-dbConnection();
+app.use(notFound);
+app.use(errorHandler);
 
 /* **************************************************SERVER CONNECTION********************************* */
 const port = process.env.PORT || 5000;

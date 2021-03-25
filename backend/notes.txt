@@ -1,0 +1,30 @@
+Agricltural Produce Groups -
+    Food
+    Fuel
+    Fiber
+    Raw Materials
+
+Categories
+    Livestock (cattle, poultry, hogs, etc.)
+    Crops (corn, soybeans, hay, etc.)
+    Edible forestry products (almonds, walnuts, etc.)
+    Dairy (milk products)
+    Fish farming
+    Vegetables
+    Fruits
+    Grains
+    Miscellaneous ag products (i.e., honey)
+
+Subcategories
+    Animals or livestock
+    Plants or fungi
+    Medicinal plants
+
+    Food for livestock
+
+    
+    Eggs/dairy
+    Vegetables
+    Meat (hogs, cattle, etc.)
+    Fruit
+    Nuts & seeds

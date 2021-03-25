@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Row, Nav } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Rating from "../Rating/Rating.js";
 import "./product.css";
@@ -8,10 +8,10 @@ const Product = ({ product }) => {
   return (
     <Card className="my-3 p-2  card">
       <Link to={`/product/${product._id}`}>
-        <Card.Img src={product.image} variant="top" className="card-image" />
+        <Card.Img src={product.image} variant="top" className="card-img " />
       </Link>
       <Card.Body>
-        <Link to={`/product/${product._id}`}>ating from "../Rating/Rating";
+        <Link to={`/product/${product._id}`} className="product-link">
           <Card.Title as="div">
             <strong>{product.name}</strong>
           </Card.Title>

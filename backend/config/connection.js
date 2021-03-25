@@ -1,22 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const dbConnection = () => {
+const dbConnection = async () => {
   try {
-    mongoose.connect(
-      process.env.MONGODB_URI,
-      {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-      },
-      () => {
-        console.log("connected to mongodb");
-      }
-    );
+    const conn = await mongoose.connect(process.env.MONGODB_COMPASS, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+
+    console.log(`Connected to mongodb: ${conn.connection.host}`);
   } catch (error) {
     console.log("mongoError", error.message);
   }
 };
 
-module.exports = dbConnection;
+export default dbConnection;

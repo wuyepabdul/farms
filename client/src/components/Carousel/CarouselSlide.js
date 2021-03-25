@@ -35,7 +35,7 @@ const CarouselSlide = () => {
           </Nav>
         </Col>
 
-        <Col sm={7}>
+        <Col sm={8}>
           <Carousel pause="hover" className=" bg-dark">
             {products.map((product) => (
               <Carousel.Item key={product._id}>
