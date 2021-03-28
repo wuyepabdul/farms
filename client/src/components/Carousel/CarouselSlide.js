@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Carousel, Col, Image, Nav, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import products from "../../products";
+import { showLoading } from "../../helpers/loading";
+import { showErrorMessage } from "../../helpers/message";
+import { listProductsAction } from "../../redux/actions/productActions";
 import "./carouselSlide.css";
 
 const CarouselSlide = () => {
+  //get products from redux store
+  const productList = useSelector((state) => state.productList);
+  const { products, loading, error } = productList;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(listProductsAction());
+  }, []);
+
   return (
     <div>
       <h4>Top Products</h4>
@@ -36,26 +49,32 @@ const CarouselSlide = () => {
         </Col>
 
         <Col sm={8}>
-          <Carousel pause="hover" className=" bg-dark">
-            {products.map((product) => (
-              <Carousel.Item key={product._id}>
-                <Link to={`/product/${product._id}`}>
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fluid
-                    className="carousel-image"
-                  />
-                  <Carousel.Caption className="carousel-caption">
-                    <h2>
-                      {" "}
-                      {product.name} (${product.price} )
-                    </h2>
-                  </Carousel.Caption>
-                </Link>
-              </Carousel.Item>
-            ))}
-          </Carousel>
+          {loading ? (
+            showLoading()
+          ) : error ? (
+            showErrorMessage(error)
+          ) : (
+            <Carousel pause="hover" className=" bg-dark">
+              {products.map((product) => (
+                <Carousel.Item key={product._id}>
+                  <Link to={`/product/${product._id}`}>
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fluid
+                      className="carousel-image"
+                    />
+                    <Carousel.Caption className="carousel-caption">
+                      <h2>
+                        {" "}
+                        {product.name} (${product.price} )
+                      </h2>
+                    </Carousel.Caption>
+                  </Link>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          )}
         </Col>
         <Col sm={2}>Adverts</Col>
       </Row>

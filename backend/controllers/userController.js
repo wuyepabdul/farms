@@ -87,3 +87,35 @@ export const getUserProfileController = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server Error, try again later" });
   }
 });
+
+// @desc update user profile
+// @route PUT /api/users/profile
+// @access Private
+
+export const updateUserProfileController = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    //check if user exist
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+
+      //  save updated user details
+      const updatedUser = await user.save();
+
+      //send back updated user details
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+        token: generateToken(updatedUser._id),
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error, try again later" });
+  }
+});

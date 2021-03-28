@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { logoutAction } from "../../redux/actions/userActions";
 
 const Header = () => {
+  // get cart items from store
+  const cart = useSelector((state) => state.cart);
+
+  const dispatch = useDispatch();
+
+  // get loggedIn user from store
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  // logout handler
+  const logoutHandler = () => {
+    dispatch(logoutAction());
+  };
   return (
     <header>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -43,47 +58,56 @@ const Header = () => {
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="#">
-                  Link
+                  About
                 </Link>
               </li>
-              <li className="nav-item dropdown">
-                <Link
-                  className="nav-link dropdown-toggle"
-                  to="#"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
+
+              {userInfo ? (
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle"
+                    to="#"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    {userInfo.name}
+                  </Link>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarDropdown"
+                  >
+                    <li>
+                      <Link className="dropdown-item" to="#">
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        to="#"
+                        onClick={logoutHandler}
+                      >
+                        <i className="fa fa-sign-out" aria-hidden="true"></i>
+                        Logout
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              ) : (
+                <Link className="nav-link " to="/login">
+                  Signin
                 </Link>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li>
-                    <Link className="dropdown-item" to="#">
-                      <i className="fa fa-user mx-2" aria-hidden="true"></i>
-                      User
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="#">
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="#">
-                      <i className="fa fa-sign-out" aria-hidden="true"></i>
-                      logout
-                    </Link>
-                  </li>
-                </ul>
-              </li>
+              )}
               <li className="nav-item">
                 <Link className="nav-link" to="#">
                   <i className="fa fa-shopping-cart" aria-hidden="true"></i>{" "}
-                  Cart
+                  {console.log("cart", cart)}
+                  {/* Cart {cart.cartItems.length} */}
                 </Link>
               </li>
             </ul>

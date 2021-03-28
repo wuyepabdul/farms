@@ -12,6 +12,7 @@ const app = express();
 /* ***************************************************MIDDLEWARES************************************* */
 dbConnection();
 
+// parse requests of content-type - application/json
 app.use(express.json());
 
 app.use("/api/products", productRoute);

@@ -14,6 +14,7 @@ import {
   addToCartAction,
   removeFromCartAction,
 } from "../../redux/actions/cartActions";
+import "./cartScreen.css";
 
 const CartScreen = ({ match, location, history }) => {
   const productId = match.params.productId;
@@ -48,7 +49,7 @@ const CartScreen = ({ match, location, history }) => {
         <Col sm={6} md={8}>
           <h1>Shopping Cart</h1>
           {cartItems.length === 0 ? (
-            <div className="aler alert-info">
+            <div className="alert alert-info">
               Cart is empty: <Link to="/"> Go Shopping</Link>
             </div>
           ) : (
@@ -57,7 +58,13 @@ const CartScreen = ({ match, location, history }) => {
                 <ListGroup.Item key={item.product}>
                   <Row>
                     <Col md={2}>
-                      <Image src={item.image} alt={item.name} fluid rounded />
+                      <Image
+                        className="cartImage"
+                        src={item.image}
+                        alt={item.name}
+                        fluid
+                        rounded
+                      />
                     </Col>
                     <Col md={3}>
                       <Link to={`/product/${item.product}`}> {item.name}</Link>

@@ -6,6 +6,7 @@ import Rating from "../../components/Rating/Rating";
 import { showLoading } from "../../helpers/loading";
 import { showErrorMessage } from "../../helpers/message";
 import { listProductDetailsAction } from "../../redux/actions/productActions";
+import "./productScreen.css";
 
 const ProductScreen = ({ history, match }) => {
   const productDetails = useSelector((state) => state.productDetails);
@@ -46,7 +47,12 @@ const ProductScreen = ({ history, match }) => {
           ) : (
             <Row>
               <Col md={3}>
-                <Image src={product.image} alt={product.name} fluid />{" "}
+                <Image
+                  className="productImage"
+                  src={product.image}
+                  alt={product.name}
+                  fluid
+                />{" "}
                 {/* the fluid attribute keeps the image within its conatiner */}
               </Col>
               <Col md={6}>
