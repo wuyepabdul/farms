@@ -79,7 +79,7 @@ const Header = () => {
                     aria-labelledby="navbarDropdown"
                   >
                     <li>
-                      <Link className="dropdown-item" to="#">
+                      <Link className="dropdown-item" to="/profile">
                         Profile
                       </Link>
                     </li>
@@ -106,8 +106,7 @@ const Header = () => {
               <li className="nav-item">
                 <Link className="nav-link" to="#">
                   <i className="fa fa-shopping-cart" aria-hidden="true"></i>{" "}
-                  {console.log("cart", cart)}
-                  {/* Cart {cart.cartItems.length} */}
+                  Cart {cart.cartItems.length}
                 </Link>
               </li>
             </ul>
