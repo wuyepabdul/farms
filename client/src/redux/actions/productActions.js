@@ -16,6 +16,7 @@ export const listProductsAction = () => async (dispatch) => {
     const { data } = await axios.get("/api/products");
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
   } catch (error) {
+    // handle error
     console.log("listProductsAction error");
     dispatch({
       type: PRODUCT_LIST_FAIL,
@@ -34,6 +35,7 @@ export const listProductDetailsAction = (id) => async (dispatch) => {
     const { data } = await axios.get(`/api/products/${id}`);
     dispatch({ type: PRODUCT_DETAILS_SUCCESS, payload: data });
   } catch (error) {
+    // handle error
     console.log("ListProductDetailsAction error", error.message);
     dispatch({
       type: PRODUCT_DETAILS_FAIL,

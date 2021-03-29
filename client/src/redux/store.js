@@ -3,6 +3,11 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import { cartReducer } from "./reducers/cartReducers";
 import {
+  orderCreateReducer,
+  orderDetailsReducer,
+  orderPayReducer,
+} from "./reducers/orderReducers";
+import {
   productDetailsReducer,
   productListReducer,
 } from "./reducers/productReducers";
@@ -21,6 +26,9 @@ const reducers = combineReducers({
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
   userUpdateProfile: userUpdateProfileReducer,
+  orderCreate: orderCreateReducer,
+  orderDetails: orderDetailsReducer,
+  orderPay: orderPayReducer,
 });
 
 // set default user state in local storage and redux store

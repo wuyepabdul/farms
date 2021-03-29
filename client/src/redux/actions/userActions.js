@@ -36,6 +36,7 @@ export const registerAction = (userData) => async (dispatch) => {
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
+    // handle error
     console.log(" userRegisterAction error", error.message);
     dispatch({
       type: USER_REGISTER_FAIL,
@@ -67,6 +68,7 @@ export const loginAction = (userData) => async (dispatch) => {
     //store user in localstorage
     setLocalStorage("userInfo", data);
   } catch (error) {
+    // handle error
     console.log("LoginAction error", error.message);
     dispatch({
       type: USER_LOGIN_FAIL,
@@ -101,6 +103,7 @@ export const getUserDetailsAction = (id) => async (dispatch, getState) => {
 
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
+    // handle error
     console.log("getUserDetailsAction error", error.message);
     dispatch({
       type: USER_DETAILS_FAIL,
@@ -138,6 +141,7 @@ export const updateUserProfileAction = (userData) => async (
 
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
   } catch (error) {
+    // handle error
     console.log("updateUserProfileAction error", error.message);
     dispatch({
       type: USER_UPDATE_PROFILE_FAIL,
