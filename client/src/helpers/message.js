@@ -8,6 +8,10 @@ export const showErrorMessage = (msg) => (
   <div className="alert alert-danger">{msg}</div>
 );
 
+export const showPendingMessage = (msg) => (
+  <div className="alert alert-warning">{msg}</div>
+);
+
 export const showNoDataError = (msg) => (
   <div className="alert alert-warning" role="alert">
     <button

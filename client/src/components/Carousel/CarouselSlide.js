@@ -4,19 +4,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { showLoading } from "../../helpers/loading";
 import { showErrorMessage } from "../../helpers/message";
-import { listProductsAction } from "../../redux/actions/productActions";
+import { listTopProductsAction } from "../../redux/actions/productActions";
 import "./carouselSlide.css";
 
 const CarouselSlide = () => {
   //get products from redux store
-  const productList = useSelector((state) => state.productList);
-  const { products, loading, error } = productList;
+  const productTopRated = useSelector((state) => state.productTopRated);
+  const { products, loading, error } = productTopRated;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(listProductsAction());
-  }, []);
+    dispatch(listTopProductsAction());
+  }, [dispatch]);
 
   return (
     <div>

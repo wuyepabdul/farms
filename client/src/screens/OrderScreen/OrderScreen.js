@@ -5,24 +5,47 @@ import { useDispatch, useSelector } from "react-redux";
 import { PayPalButton } from "react-paypal-button-v2";
 import { Link } from "react-router-dom";
 import { showLoading } from "../../helpers/loading";
-import { showErrorMessage } from "../../helpers/message";
 import {
+  showErrorMessage,
+  showNoDataError,
+  showPendingMessage,
+  showSuccessMessage,
+} from "../../helpers/message";
+import {
+  deliveredAction,
   getOrderDetailsAction,
+  outForDeliveryAction,
   payOrderAction,
 } from "../../redux/actions/orderActions";
-import { ORDER_PAY_RESET } from "../../redux/constants/orderConstants";
+import {
+  ORDER_DELIVERED_RESET,
+  ORDER_OUT_FOR_DELIVERY_RESET,
+  ORDER_PAY_RESET,
+} from "../../redux/constants/orderConstants";
 
-// import Meta from "../../components/Meta/Meta";
+import Meta from "../../components/Meta/Meta";
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
   const [sdkReady, setSdkReady] = useState(false);
 
+  // get order details from store
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error } = orderDetails;
 
+  //get order delivered details from store
+  const orderDeliver = useSelector((state) => state.orderDeliver);
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
+
+  const orderOutForDelivery = useSelector((state) => state.orderOutForDelivery);
+  const {
+    loading: loadingOutForDelivery,
+    success: successOutForDelivery,
+  } = orderOutForDelivery;
+
+  // get loggedIn usr info
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -42,38 +65,76 @@ const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
-    // dynamically add paypal script
+    if (userInfo === undefined) {
+      history.push("/login");
+    }
     const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get("/api/config/paypal");
+      const {
+        data: { clientId },
+      } = await axios.get("/api/config/paypal");
       const script = document.createElement("script");
       script.type = "text/javascript";
       script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
       script.async = true;
-      // when script loads, set sdkReady
       script.onload = () => {
         setSdkReady(true);
       };
-      // add script to body
-      document.body.appendChild(script);
+      document.body.appendChild(script); // adds scripts as the last child in the body of our html
     };
-    // show order when is paid or not paid
-    if (!order || successPay) {
-      // reset payment to prevent infinite loop
+    if (
+      !order ||
+      successPay ||
+      successOutForDelivery ||
+      (order && order._id !== orderId)
+    ) {
+      //prevents infinite ORDER_DETAILS_REQUEST and ORDER_DETAILS_SUCCESS loop in redux
       dispatch({ type: ORDER_PAY_RESET });
+      dispatch({ type: ORDER_DELIVERED_RESET });
+      dispatch({ type: ORDER_OUT_FOR_DELIVERY_RESET });
+
+      //order && order._id !== orderId means order exist but
+      //order.id does not equal to orderID(url id)
+
+      //this means if order is not loaded, load the order by dispatching
+      // getOrderDetails action or if payment is successful dispatch getDetailsOrder
+
       dispatch(getOrderDetailsAction(orderId));
-    } else if (!order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript();
-      } else {
-        setSdkReady(true);
+    } else {
+      //we have order at this point
+      if (!order.isPaid) {
+        if (!window.paypal) {
+          addPayPalScript();
+        } else {
+          //we have an unpaid order and paypal is already loaded
+          setSdkReady(true);
+        }
       }
     }
-  }, [dispatch, successPay, orderId, order]);
+  }, [
+    orderId,
+    order,
+    sdkReady,
+    dispatch,
+    successPay,
+    sdkReady,
+    successOutForDelivery,
+    userInfo,
+  ]);
 
   //submit payment using paypal
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult);
     dispatch(payOrderAction(orderId, paymentResult));
+  };
+
+  //updated delivered handler
+  const deliverHandler = () => {
+    dispatch(deliveredAction(order));
+  };
+
+  //updated out fo delivery handler
+  const outForDeliveryHandler = () => {
+    dispatch(outForDeliveryAction(order));
   };
 
   return loading ? (
@@ -82,15 +143,13 @@ const OrderScreen = ({ match }) => {
     showErrorMessage(error)
   ) : (
     <div className="container">
-      {" "}
-      {/* <Meta /> */}
+      <Meta title={"Order Details"} />
       <h1>Order {order._id}</h1>{" "}
       <Row>
         <Col md={8}>
           <ListGroup>
             <ListGroup.Item>
               <h2>Shipping</h2>
-              {console.log("orderDetails", orderDetails)}
               <p>
                 <strong>Name: </strong>
                 {order.user.name}
@@ -106,16 +165,15 @@ const OrderScreen = ({ match }) => {
                 {order.shippingAddress.postalCode},
                 {order.shippingAddress.country}
               </p>
-              {order.isDelivered ? (
-                <div className="alert alert-success">
-                  {" "}
-                  Delivered At : {order.deliveredAt}{" "}
-                </div>
-              ) : (
-                showErrorMessage("Not Delivered")
-              )}
-            </ListGroup.Item>
 
+              {order.outForDelivery && !order.isDelivered
+                ? showPendingMessage(
+                    `Out For Delivery at : ${order.outForDeliveryAt}`
+                  )
+                : order.isDelivered
+                ? showSuccessMessage(`Delivered At : ${order.deliveredAt}`)
+                : showErrorMessage("Not Delivered")}
+            </ListGroup.Item>
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
@@ -198,7 +256,7 @@ const OrderScreen = ({ match }) => {
                   <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && (
+              {!order.isPaid && userInfo._id === order.user._id && (
                 <ListGroup.Item>
                   {loadingPay && showLoading()}
                   {!sdkReady ? (
@@ -211,13 +269,37 @@ const OrderScreen = ({ match }) => {
                   )}
                 </ListGroup.Item>
               )}
-              {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
-                <ListGroup.Item>
-                  <Button type="button" className="btn btn-block">
-                    Mark as Delivered
-                  </Button>
-                </ListGroup.Item>
-              )}
+              {loadingOutForDelivery && showLoading()}
+
+              {userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered &&
+                !order.outForDelivery && (
+                  <ListGroup.Item>
+                    <Button
+                      type="button"
+                      className="btn btn-block"
+                      onClick={outForDeliveryHandler}
+                    >
+                      Mark as Out for Delivery
+                    </Button>
+                  </ListGroup.Item>
+                )}
+              {loadingDeliver && showLoading()}
+              {userInfo.isAdmin &&
+                order.isPaid &&
+                order.outForDelivery &&
+                !order.isDelivered && (
+                  <ListGroup.Item>
+                    <Button
+                      type="button"
+                      className="btn btn-block"
+                      onClick={deliverHandler}
+                    >
+                      Mark as Delivered
+                    </Button>
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>

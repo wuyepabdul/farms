@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { logoutAction } from "../../redux/actions/userActions";
+import Searchbox from "../Searchbox/Searchbox";
 
-const Header = () => {
+const Header = ({ history }) => {
   // get cart items from store
   const cart = useSelector((state) => state.cart);
 
@@ -16,6 +17,7 @@ const Header = () => {
   // logout handler
   const logoutHandler = () => {
     dispatch(logoutAction());
+    history.push("/login");
   };
   return (
     <header>
@@ -39,17 +41,7 @@ const Header = () => {
             className="collapse navbar-collapse "
             id="navbarSupportedContent"
           >
-            <form className="d-flex mx-auto mt-2 me-auto">
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
+          <Searchbox />
             <ul className="navbar-nav  mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/">
@@ -62,7 +54,7 @@ const Header = () => {
                 </Link>
               </li>
 
-              {userInfo ? (
+              {userInfo && !userInfo.isAdmin ? (
                 <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle"
@@ -103,6 +95,53 @@ const Header = () => {
                   Signin
                 </Link>
               )}
+              {userInfo && userInfo.isAdmin && (
+                <li className="nav-item dropdown">
+                  <Link
+                    className="nav-link dropdown-toggle"
+                    to="#"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Admin
+                  </Link>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarDropdown"
+                  >
+                    <li>
+                      <Link className="dropdown-item" to="/admin/userList">
+                        Users
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/admin/productList">
+                        Products
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/admin/orderList">
+                        Orders
+                      </Link>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        to="#"
+                        onClick={logoutHandler}
+                      >
+                        <i className="fa fa-sign-out" aria-hidden="true"></i>
+                        Logout
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              )}
               <li className="nav-item">
                 <Link className="nav-link" to="#">
                   <i className="fa fa-shopping-cart" aria-hidden="true"></i>{" "}
@@ -117,4 +156,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default withRouter(Header);

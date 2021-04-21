@@ -1,4 +1,4 @@
-/* import React from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
 
 const Meta = ({ title, description, keywords }) => {
@@ -12,9 +12,9 @@ const Meta = ({ title, description, keywords }) => {
 };
 
 Meta.defaultProps = {
-  title: "Welcome to Proshop",
-  description: "We sell the best products for cheap",
-  keywords: "electronics, buy electronics, cheap electronics, gadgets",
+  title: "Farms Nigeria | Online",
+  description: "Buy farm produce with ease",
+  keywords:
+    "farm produce, buy farm produce, cheap farm produce, vegetables, grains, legumes, fruits",
 };
 export default Meta;
- */

@@ -98,3 +98,22 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error, try again later" });
   }
 });
+
+// @desc Get logged in user orders
+// @route GET /api/orders/myorders
+// @access Private
+export const getMyOrdersController = asyncHandler(async (req, res) => {
+  try {
+    // find all orders of loggedIn user
+    const orders = await Order.find({ user: req.user._id });
+    if (orders) {
+      res.json(orders);
+    } else {
+      res.status(404).json({ message: "No orders found" });
+    }
+  } catch (error) {
+    console.log("get my Order error", error.message);
+    // handle error
+    res.status(500).json({ message: "Server error: try again later" });
+  }
+});

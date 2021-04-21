@@ -6,9 +6,21 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_LIST_MY_FAIL,
+  ORDER_LIST_MY_REQUEST,
+  ORDER_LIST_MY_SUCCESS,
   ORDER_PAY_FAIL,
   ORDER_PAY_REQUEST,
   ORDER_PAY_SUCCESS,
+  ORDER_LIST_ALL_FAIL,
+  ORDER_LIST_ALL_REQUEST,
+  ORDER_LIST_ALL_SUCCESS,
+  ORDER_OUT_FOR_DELIVERY_REQUEST,
+  ORDER_OUT_FOR_DELIVERY_SUCCESS,
+  ORDER_OUT_FOR_DELIVERY_FAIL,
+  ORDER_DELIVERED_REQUEST,
+  ORDER_DELIVERED_SUCCESS,
+  ORDER_DELIVERED_FAIL,
 } from "../constants/orderConstants";
 
 // create an order action
@@ -112,6 +124,142 @@ export const payOrderAction = (orderId, paymentResult) => async (
     console.log("payOrderAction", error.message);
     dispatch({
       type: ORDER_PAY_FAIL,
+      payload:
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+//update order to outForDelivery action
+export const outForDeliveryAction = (order) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_OUT_FOR_DELIVERY_REQUEST });
+
+    //get loggedIn User info
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    //set headers
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    //send request
+    const { data } = await axios.put(
+      `/api/admin/orders/${order._id}/outForDelivery`,
+      {},
+      config
+    );
+
+    dispatch({ type: ORDER_OUT_FOR_DELIVERY_SUCCESS, payload: data });
+  } catch (error) {
+    console.error("outForDeliveryAction error", error.message);
+    dispatch({
+      type: ORDER_OUT_FOR_DELIVERY_FAIL,
+      payload:
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+//update order to delivered action
+export const deliveredAction = (order) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_DELIVERED_REQUEST });
+
+    //get loggedIn user info
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    //set headers
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    //send request
+    const { data } = await axios.put(
+      `/api/admin/orders/${order._id}/delivered`,
+      {},
+      config
+    );
+
+    dispatch({ type: ORDER_DELIVERED_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: ORDER_DELIVERED_FAIL,
+      payload:
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+// list all my orders action
+export const listMyOrdersAction = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_LIST_MY_REQUEST });
+    //get loggedIn user info
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    //config headers
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    //send request to server
+    const { data } = await axios.get("/api/orders/myorders", config);
+    dispatch({ type: ORDER_LIST_MY_SUCCESS, payload: data });
+  } catch (error) {
+    //handle error
+    console.log("listMyOrdersAction error", error.message);
+    dispatch({
+      type: ORDER_LIST_MY_FAIL,
+      payload:
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+// list all created orders action
+export const listAllOrdersAction = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_LIST_ALL_REQUEST });
+
+    // get loggedIn User details
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    //set headers
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    //send request
+    const { data } = await axios.get("/api/admin/orders", config);
+    dispatch({ type: ORDER_LIST_ALL_SUCCESS, payload: data });
+  } catch (error) {
+    console.log("listAllOrdersAction error", error.message);
+    dispatch({
+      type: ORDER_LIST_ALL_FAIL,
       payload:
         error.response.data && error.response.data.message
           ? error.response.data.message

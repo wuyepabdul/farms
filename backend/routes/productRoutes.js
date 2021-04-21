@@ -1,16 +1,24 @@
 import express from "express";
+import { protect } from "../middlewares/authMiddleware.js";
 import {
-  getAllProducts,
-  getProductById,
+  getAllProductsController,
+  getProductByIdController,
+  getTopProductsController,
+  createProductReviewController,
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
-// @desc Fetch all products
-// @route Get /api/products
-// @access Public
-router.get("/", getAllProducts);
+//get all products route
+router.get("/", getAllProductsController);
 
-router.get("/:id", getProductById);
+//get top products route
+router.get("/top", getTopProductsController);
+
+// get a product by id route
+router.get("/:id", getProductByIdController);
+
+//create a product review route
+router.post("/:id/reviews", protect, createProductReviewController);
 
 export default router;

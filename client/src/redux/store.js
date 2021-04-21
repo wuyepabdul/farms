@@ -3,24 +3,41 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import { cartReducer } from "./reducers/cartReducers";
 import {
+  orderListReducer,
   orderCreateReducer,
   orderDetailsReducer,
+  orderListMyReducer,
   orderPayReducer,
+  orderOutForDeliveryReducer,
+  orderDeliverReducer,
 } from "./reducers/orderReducers";
 import {
+  productCreateReducer,
+  productDeleteReducer,
   productDetailsReducer,
+  productTopRatedReducer,
   productListReducer,
+  productUpdateReducer,
+  productCreateReviewReducer,
 } from "./reducers/productReducers";
 import {
   userDetailsReducer,
+  userDeleteReducer,
+  userListReducer,
   userLoginReducer,
   userRegisterReducer,
   userUpdateProfileReducer,
+  userUpdateReducer,
 } from "./reducers/userReducers";
 
 const reducers = combineReducers({
   productList: productListReducer,
+  productTopRated: productTopRatedReducer,
   productDetails: productDetailsReducer,
+  productDelete: productDeleteReducer,
+  productCreate: productCreateReducer,
+  productUpdate: productUpdateReducer,
+  productCreateReview: productCreateReviewReducer,
   cart: cartReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
@@ -29,6 +46,13 @@ const reducers = combineReducers({
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
+  orderOutForDelivery: orderOutForDeliveryReducer,
+  orderDeliver: orderDeliverReducer,
+  orderListMy: orderListMyReducer,
+  orderList: orderListReducer,
+  userList: userListReducer,
+  userUpdate: userUpdateReducer,
+  userDelete: userDeleteReducer,
 });
 
 // set default user state in local storage and redux store

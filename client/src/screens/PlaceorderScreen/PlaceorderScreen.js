@@ -3,7 +3,9 @@ import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import CheckoutSteps from "../../components/CheckoutSteps/CheckoutSteps";
+import { showErrorMessage } from "../../helpers/message";
 import { createOrderAction } from "../../redux/actions/orderActions";
+import Meta from "../../components/Meta/Meta";
 
 const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -60,12 +62,15 @@ const PlaceOrderScreen = ({ history }) => {
   };
   return (
     <>
+      <Meta title={"Place Order"} />
       <CheckoutSteps step1 step2 step3 step4 />
+
       <Row>
         <Col md={8}>
           <ListGroup variant="flush">
             <ListGroup.Item>
               <h2>Shipping</h2>
+              {error && showErrorMessage(error)}
               <p>
                 <strong>Address:</strong>
                 {cart.shippingAddress.address}, {cart.shippingAddress.city},{" "}
@@ -76,7 +81,7 @@ const PlaceOrderScreen = ({ history }) => {
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <strong>Method:</strong>
-              {console.error("payment", cart.paymentMethod)}
+
               {cart.paymentMethod}
             </ListGroup.Item>
 

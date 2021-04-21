@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { isEmpty } from "validator";
 import CheckoutSteps from "../../components/CheckoutSteps/CheckoutSteps";
 import FormContainer from "../../components/FormContainer/FormContainer";
+import { showErrorMessage } from "../../helpers/message";
 import { saveShippingAddressAction } from "../../redux/actions/cartActions";
+import Meta from "../../components/Meta/Meta";
 
 const ShippingScreen = ({ history }) => {
   // get shipping info from store
@@ -67,10 +69,12 @@ const ShippingScreen = ({ history }) => {
 
   return (
     <div>
-      <FormContainer>
+      <FormContainer className="container">
+        <Meta title={"Shipping Details"} />
         <CheckoutSteps step1 step2 />
         <Form onSubmit={submitHandler}>
           <h1>Shipping</h1>
+          {errorMessage && showErrorMessage(errorMessage)}
           <Form.Group controlId="address">
             <Form.Label>Address </Form.Label>
             <Form.Control

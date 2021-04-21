@@ -5,10 +5,25 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_LIST_MY_FAIL,
+  ORDER_LIST_MY_REQUEST,
+  ORDER_LIST_MY_SUCCESS,
+  ORDER_LIST_MY_RESET,
   ORDER_PAY_FAIL,
   ORDER_PAY_REQUEST,
   ORDER_PAY_RESET,
   ORDER_PAY_SUCCESS,
+  ORDER_LIST_ALL_REQUEST,
+  ORDER_LIST_ALL_SUCCESS,
+  ORDER_LIST_ALL_FAIL,
+  ORDER_OUT_FOR_DELIVERY_SUCCESS,
+  ORDER_OUT_FOR_DELIVERY_RESET,
+  ORDER_OUT_FOR_DELIVERY_FAIL,
+  ORDER_DELIVERED_REQUEST,
+  ORDER_DELIVERED_SUCCESS,
+  ORDER_DELIVERED_FAIL,
+  ORDER_DELIVERED_RESET,
+  ORDER_OUT_FOR_DELIVERY_REQUEST,
 } from "../constants/orderConstants";
 
 // create an order reducer
@@ -53,6 +68,69 @@ export const orderPayReducer = (state = {}, action) => {
       return { loading: false, error: action.payload };
     case ORDER_PAY_RESET:
       return {};
+    default:
+      return state;
+  }
+};
+
+// update order to out for delivery reducer
+export const orderOutForDeliveryReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_OUT_FOR_DELIVERY_REQUEST:
+      return { loading: true };
+    case ORDER_OUT_FOR_DELIVERY_SUCCESS:
+      return { loading: false, success: true };
+    case ORDER_OUT_FOR_DELIVERY_FAIL:
+      return { loading: false, error: action.payload };
+    case ORDER_OUT_FOR_DELIVERY_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+// update order to delivered reducer
+export const orderDeliverReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_DELIVERED_REQUEST:
+      return { loading: true };
+    case ORDER_DELIVERED_SUCCESS:
+      return { loading: false, success: true };
+    case ORDER_DELIVERED_FAIL:
+      return { loading: false, error: action.payload };
+    case ORDER_DELIVERED_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+//  list all my orders reducer
+export const orderListMyReducer = (state = { orders: [] }, action) => {
+  switch (action.type) {
+    case ORDER_LIST_MY_REQUEST:
+      return { ...state, loading: true };
+    case ORDER_LIST_MY_SUCCESS:
+      return { loading: false, orders: action.payload };
+    case ORDER_LIST_MY_FAIL:
+      return { loading: false, error: action.payload };
+    case ORDER_LIST_MY_RESET:
+      return { orders: [] };
+    default:
+      return state;
+  }
+};
+
+// list all created orders reducer
+export const orderListReducer = (state = { orders: [] }, action) => {
+  switch (action.type) {
+    case ORDER_LIST_ALL_REQUEST:
+      return { ...state, loading: true };
+    case ORDER_LIST_ALL_SUCCESS:
+      return { loading: false, orders: action.payload };
+    case ORDER_LIST_ALL_FAIL:
+      return { loading: false, error: action.payload };
+
     default:
       return state;
   }

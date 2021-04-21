@@ -15,6 +15,7 @@ import {
   removeFromCartAction,
 } from "../../redux/actions/cartActions";
 import "./cartScreen.css";
+import Meta from "../../components/Meta/Meta";
 
 const CartScreen = ({ match, location, history }) => {
   const productId = match.params.productId;
@@ -43,8 +44,8 @@ const CartScreen = ({ match, location, history }) => {
   };
 
   return (
-    <div>
-      {" "}
+    <div className="container">
+      <Meta title={"Cart Items"} />
       <Row>
         <Col sm={6} md={8}>
           <h1>Shopping Cart</h1>
@@ -54,6 +55,7 @@ const CartScreen = ({ match, location, history }) => {
             </div>
           ) : (
             <ListGroup variant="flush">
+              <Link to="/">Go Shopping</Link>
               {cartItems.map((item) => (
                 <ListGroup.Item key={item.product}>
                   <Row>
@@ -121,7 +123,7 @@ const CartScreen = ({ match, location, history }) => {
               <ListGroup.Item>
                 <Button
                   type="button"
-                  className="btn btn-block"
+                  className="btn btn-success btn-block"
                   onClick={checkoutHandler}
                   disabled={cartItems.length === 0}
                 >

@@ -17,10 +17,8 @@ import {
 
 const router = express.Router();
 
-/* 
-register a user route
-public 
-*/
+//register a user route
+//public
 router.post(
   "/register",
   registerValidator,
@@ -28,22 +26,16 @@ router.post(
   registerUserController
 );
 
-/* 
-login a user route
-public 
-*/
+// login a user route
+//public
 router.post("/login", signinValidator, validatorResult, authUserController);
 
-/* 
- get user profile route
- private 
-*/
+// get user profile route
+// private
 router.get("/profile", protect, getUserProfileController);
 
-/* 
-update user profile route
-private 
-*/
+//update user profile route
+//private
 router.put(
   "/profile",
   protect,

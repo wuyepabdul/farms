@@ -6,6 +6,7 @@ import { isEmail, isEmpty, equals } from "validator";
 import FormContainer from "../../components/FormContainer/FormContainer";
 import { registerAction } from "../../redux/actions/userActions";
 import { showLoading } from "../../helpers/loading";
+import Meta from "../../components/Meta/Meta";
 
 const RegisterScreen = ({ location, history }) => {
   const [name, setName] = useState("");
@@ -14,7 +15,10 @@ const RegisterScreen = ({ location, history }) => {
   const [confirmPassword, setconfirmPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const redirect = location.search ? location.search.split("=")[1] : "/";
+  const redirect =
+    location.search && location.search.split("=")[1] !== "/"
+      ? location.search.split("=")[1]
+      : "/";
 
   const dispatch = useDispatch();
 
@@ -48,7 +52,8 @@ const RegisterScreen = ({ location, history }) => {
   };
 
   return (
-    <FormContainer>
+    <FormContainer className="container">
+      <Meta title={"Create your Farms Online account"} />
       <h1> Sign Up</h1>
       {message && <div className="alert alert-danger">{message}</div>}
       {error && <div className="alert alert-danger">{error}</div>}
@@ -98,7 +103,7 @@ const RegisterScreen = ({ location, history }) => {
         <Col>
           {" "}
           Have an Account?{" "}
-          <Link to={redirect ? `/register?redirect=${redirect}` : `/login`}>
+          <Link to={redirect ? `/login?redirect=${redirect}` : `/login`}>
             Login
           </Link>
         </Col>

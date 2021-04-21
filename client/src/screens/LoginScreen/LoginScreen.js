@@ -7,13 +7,17 @@ import FormContainer from "../../components/FormContainer/FormContainer";
 import { loginAction } from "../../redux/actions/userActions";
 import { isEmpty, isEmail } from "validator";
 import { showErrorMessage } from "../../helpers/message";
+import Meta from "../../components/Meta/Meta";
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const redirect = location.search ? location.search.split("=")[1] : "/";
+  const redirect =
+    location.search && location.search.split("=")[1] !== "/"
+      ? location.search.split("=")[1]
+      : "/";
 
   const dispatch = useDispatch();
 
@@ -44,6 +48,7 @@ const LoginScreen = ({ location, history }) => {
   };
   return (
     <FormContainer>
+      <Meta title={"Login Page"} />
       <h1>Sign In</h1>
 
       {error && showErrorMessage(error)}
@@ -76,7 +81,11 @@ const LoginScreen = ({ location, history }) => {
             {" "}
             Don't Have an Account?{" "}
             <Link
-              to={redirect ? `/register?redirect=${redirect}` : `/register`}
+              to={
+                redirect === "/"
+                  ? `/register?redirect=/register`
+                  : `/register?redirect=${redirect}`
+              }
             >
               Register
             </Link>
