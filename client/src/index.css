@@ -7,3 +7,14 @@ body {
 main {
   min-height: 80vh;
 }
+
+.paystack-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: rgb(248, 252, 52);
+  font-size: large;
+}
+
+.paystack-button:hover {
+  background-color: rgba(165, 155, 16, 0.919);
+}

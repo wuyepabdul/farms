@@ -24,6 +24,9 @@ import {
   ORDER_DELIVERED_FAIL,
   ORDER_DELIVERED_RESET,
   ORDER_OUT_FOR_DELIVERY_REQUEST,
+  ORDER_VERIFY_TRANSACTION_SUCCESS,
+  ORDER_VERIFY_TRANSACTION_FAIL,
+  ORDER_VERIFY_TRANSACTION_REQUEST,
 } from "../constants/orderConstants";
 
 // create an order reducer
@@ -131,6 +134,20 @@ export const orderListReducer = (state = { orders: [] }, action) => {
     case ORDER_LIST_ALL_FAIL:
       return { loading: false, error: action.payload };
 
+    default:
+      return state;
+  }
+};
+
+// verify transaction
+export const verifyOrderReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_VERIFY_TRANSACTION_REQUEST:
+      return { loading: true };
+    case ORDER_VERIFY_TRANSACTION_SUCCESS:
+      return { loading: false, verifyData: action.payload };
+    case ORDER_VERIFY_TRANSACTION_FAIL:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }

@@ -19,8 +19,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import HomeIcon from "@material-ui/icons/Home";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import MenuBookIcon from "@material-ui/icons/MenuBook";
-import { ExitToApp, ListAlt } from "@material-ui/icons";
+import { ExitToApp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   textColor: {
@@ -200,26 +199,14 @@ const Header = ({ history }) => {
       ) : userInfo && userInfo.isAdmin ? (
         <>
           <MenuItem>
-            <IconButton
-              aria-label="login"
-              aria-haspopup="true"
-              color="inherit"
-            ></IconButton>
-            <Link href="#" className={classes.mobileTextColor}>
-              Admin
-            </Link>
-          </MenuItem>
-          <hr />
-          <MenuItem>
             <IconButton aria-label="login" aria-haspopup="true" color="inherit">
               <PersonIcon />
             </IconButton>
 
             <Link href="#" className={classes.mobileTextColor}>
-              {userInfo.name}
+              Admin
             </Link>
           </MenuItem>
-
           <MenuItem>
             <IconButton aria-label="login" aria-haspopup="true" color="inherit">
               <PeopleIcon />
@@ -227,24 +214,6 @@ const Header = ({ history }) => {
 
             <Link href="/admin/userList" className={classes.mobileTextColor}>
               Users
-            </Link>
-          </MenuItem>
-          <MenuItem>
-            <IconButton aria-label="login" aria-haspopup="true" color="inherit">
-              <MenuBookIcon />
-            </IconButton>
-
-            <Link href="/admin/productList" className={classes.mobileTextColor}>
-              Products
-            </Link>
-          </MenuItem>
-          <MenuItem>
-            <IconButton aria-label="login" aria-haspopup="true" color="inherit">
-              <ListAlt />
-            </IconButton>
-
-            <Link href="/admin/orderList" className={classes.mobileTextColor}>
-              Orders
             </Link>
           </MenuItem>
           <MenuItem>
@@ -432,7 +401,7 @@ const Header = ({ history }) => {
             </MenuItem>
             <IconButton aria-label="show 17 new notifications" color="inherit">
               <Typography>
-                <Link className={classes.textColor} href="/cart">
+                <Link className={classes.textColor} href="#">
                   Cart
                 </Link>
               </Typography>

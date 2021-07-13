@@ -21,6 +21,9 @@ import {
   ORDER_DELIVERED_REQUEST,
   ORDER_DELIVERED_SUCCESS,
   ORDER_DELIVERED_FAIL,
+  ORDER_VERIFY_TRANSACTION_REQUEST,
+  ORDER_VERIFY_TRANSACTION_SUCCESS,
+  ORDER_VERIFY_TRANSACTION_FAIL,
 } from "../constants/orderConstants";
 
 // create an order action
@@ -90,11 +93,8 @@ export const getOrderDetailsAction = (id) => async (dispatch, getState) => {
   }
 };
 
-// get order getails action
-export const payOrderAction = (orderId, paymentResult) => async (
-  dispatch,
-  getState
-) => {
+// update order to paid action
+export const payOrderAction = (orderId) => async (dispatch, getState) => {
   try {
     dispatch({ type: ORDER_PAY_REQUEST });
 
@@ -103,20 +103,15 @@ export const payOrderAction = (orderId, paymentResult) => async (
       userLogin: { userInfo },
     } = getState();
 
-    // configure headers
-    const config = {
+    //send request to server
+    const { data } = await axios({
+      method: "put",
+      url: `/api/orders/${orderId}/pay`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-    };
-
-    //send request to server
-    const { data } = await axios.put(
-      `/api/orders/${orderId}/pay`,
-      paymentResult,
-      config
-    );
+    });
 
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
   } catch (error) {
@@ -131,6 +126,45 @@ export const payOrderAction = (orderId, paymentResult) => async (
     });
   }
 };
+
+// verify transaction
+
+export const verifyTransactionAction =
+  (trans_ref) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: ORDER_VERIFY_TRANSACTION_REQUEST });
+
+      // get loggedIn user info
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
+      // configure headers
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      //send request to server
+      const { data } = await axios.get(
+        `/api/orders/verifyPayment/${trans_ref}`,
+        config
+      );
+
+      dispatch({ type: ORDER_VERIFY_TRANSACTION_SUCCESS, payload: data });
+    } catch (error) {
+      //handle error
+      console.log("verify payment error", error.message);
+      dispatch({
+        type: ORDER_VERIFY_TRANSACTION_FAIL,
+        payload:
+          error.response.data && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };
 
 //update order to outForDelivery action
 export const outForDeliveryAction = (order) => async (dispatch, getState) => {

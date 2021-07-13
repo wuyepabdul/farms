@@ -7,6 +7,7 @@ import HomeScreen from "./screens/HomeScreen/HomeScreen";
 import LoginScreen from "./screens/LoginScreen/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen/RegisterScreen";
 import OrderScreen from "./screens/OrderScreen/OrderScreen";
+import OrderScreenBackup from "./screens/OrderScreen/OrderScreenBackup";
 import PaymentScreen from "./screens/PaymentScreen/PaymentScreen";
 import PlaceOrderScreen from "./screens/PlaceorderScreen/PlaceorderScreen";
 import ProductScreen from "./screens/ProductScreen/ProductScreen";
@@ -17,12 +18,19 @@ import UserEditScreen from "./screens/UserEditScren/UserEditScreen";
 import ProductListScreen from "./screens/ProductListScreen/ProductListScreen";
 import ProductEditScreen from "./screens/ProductEditScreen/ProductEditScreen";
 import OrderListScreen from "./screens/OrderListScreen/OrderListScreen";
+import Navbar from "./components/Header/Navbar";
+import Landing from "./screens/HomeScreen/Landing";
+import Registration from "./screens/Registration/Registration";
+import PaystackCheckout from "./screens/OrderScreen/PaystackCheckout";
+import PaystackBtn from "./screens/Paystack/PaystackBtn";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Header />
       <main>
+        <Route exact path="/landing" component={Landing} />
+        <Route exact path="/reg" component={Registration} />
         <Route exact path="/" component={HomeScreen} />
 
         <Route path="/login" component={LoginScreen} />
@@ -40,6 +48,7 @@ const App = () => {
           component={ProductListScreen}
           exact
         />
+        {/* <Route path="/order/:id" component={OrderScreenBackup} /> */}
         <Route path="/order/:id" component={OrderScreen} />
         <Route path="/admin/orderlist" component={OrderListScreen} />
         <Route path="/product/:id" component={ProductScreen} />

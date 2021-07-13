@@ -1,0 +1,16 @@
+1. Add Farmer user functionality
+    -   farmer profile
+    -   farmer create categories
+    -   farmer create product
+    -   farmer edit product
+    -   farmer delete product
+    -   follow a farmer
+    -   unfollow a farmer
+
+2. Registered user functionality
+    -   follow a farmer to see farmer's products
+    -   unfollow a farmer
+
+3. Swagger api documentation
+
+4. UI / UX design with material ui/core

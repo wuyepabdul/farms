@@ -7,55 +7,51 @@ import {
 } from "../constants/cartConstants";
 
 //action to add item to cart
-export const addToCartAction = (productId, qty) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    // send get request to server
-    const { data } = await axios.get(`/api/products/${productId}`);
+export const addToCartAction =
+  (productId, qty) => async (dispatch, getState) => {
+    try {
+      // send get request to server
+      const { data } = await axios.get(`/api/products/${productId}`);
 
-    //dispatch product item
-    dispatch({
-      type: ADD_TO_CART,
-      payload: {
-        product: data._id,
-        name: data.name,
-        image: data.image,
-        price: data.price,
-        countInStock: data.countInStock,
-        qty,
-      },
-    });
+      //dispatch product item
+      dispatch({
+        type: ADD_TO_CART,
+        payload: {
+          product: data._id,
+          name: data.name,
+          image: data.image,
+          price: data.price,
+          countInStock: data.countInStock,
+          qty,
+        },
+      });
 
-    //set local storage
-    localStorage.setItem(
-      "cartItems",
-      JSON.stringify(getState().cart.cartItems)
-    );
-  } catch (error) {
-    console.log("addToCartAction Error,", error.message);
-  }
-};
+      //set local storage
+      localStorage.setItem(
+        "cartItems",
+        JSON.stringify(getState().cart.cartItems)
+      );
+    } catch (error) {
+      console.log("addToCartAction Error,", error.message);
+    }
+  };
 
 // action to remove an item from cart
-export const removeFromCartAction = (productId) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    // remove item from cart
-    dispatch({ type: REMOVE_FROM_CART, payload: productId });
+export const removeFromCartAction =
+  (productId) => async (dispatch, getState) => {
+    try {
+      // remove item from cart
+      dispatch({ type: REMOVE_FROM_CART, payload: productId });
 
-    //update localStorage
-    localStorage.setItem(
-      "cartItems",
-      JSON.stringify(getState().cart.cartItems)
-    );
-  } catch (error) {
-    console.log("removeFromCartAction Error", error.message);
-  }
-};
+      //update localStorage
+      localStorage.setItem(
+        "cartItems",
+        JSON.stringify(getState().cart.cartItems)
+      );
+    } catch (error) {
+      console.log("removeFromCartAction Error", error.message);
+    }
+  };
 
 // action to save shipping information
 export const saveShippingAddressAction = (formData) => (dispatch) => {

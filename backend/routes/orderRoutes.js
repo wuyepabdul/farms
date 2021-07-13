@@ -4,6 +4,7 @@ import {
   getMyOrdersController,
   getOrderByIdController,
   updateOrderToPaid,
+  verifyTransactionController,
 } from "../controllers/orderController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -16,6 +17,10 @@ router.post("/", protect, addOrderItemsController);
 // get my orders
 // private
 router.get("/myorders", protect, getMyOrdersController);
+
+// verify transactions
+// private
+router.get("/verifyPayment/:trans_ref", protect, verifyTransactionController);
 
 // get order by id
 // private

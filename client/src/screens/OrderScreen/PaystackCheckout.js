@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import { PaystackButton } from "react-paystack";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { showLoading } from "../../helpers/loading";
-import Meta from "../../components/Meta/Meta";
 import {
   showErrorMessage,
   showPendingMessage,
@@ -15,22 +14,18 @@ import {
   getOrderDetailsAction,
   outForDeliveryAction,
   payOrderAction,
-  verifyTransactionAction,
 } from "../../redux/actions/orderActions";
-import { verifyTransaction } from "../../api/flutterwave";
+import Meta from "../../components/Meta/Meta";
 
-const OrderScreen = ({ match, history }) => {
+const PaystackCheckout = ({ match, history }) => {
+  const publicKey = process.env.REACT_APP_PAYSTACK_PUBLIC_KEY;
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
-  //public Key
-  const publicKey = process.env.REACT_APP_PAYSTACK_PUBLIC_KEY;
-
-  // set component states
+  // set paystack user data component states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
-  const [verifiedPayment, setVerifiedPayment] = useState(false);
+  const [amount, setAmount] = useState(0);
 
   // get order details from store
   const orderDetails = useSelector((state) => state.orderDetails);
@@ -63,87 +58,61 @@ const OrderScreen = ({ match, history }) => {
     );
   }
 
-  //re-rendering conditions
   useEffect(() => {
     if (userInfo === undefined) {
       history.push("/login");
     }
-    // check if order is not loaded
+
     if (!order || (order && order._id !== orderId)) {
       dispatch(getOrderDetailsAction(orderId));
     } else {
       //we have order at this point
-      if (verifiedPayment) {
-        dispatch(payOrderAction(orderId));
-        window.location.reload();
-        setVerifiedPayment(false);
+      //check if order is not paid
+      if (!order.isPaid) {
+        setName(order.user.name);
+        setEmail(order.user.email);
+        setAmount(order.totalPrice);
       }
-
-      setAmount(Math.round(order.totalPrice));
-      setName(order.user.name);
-      setEmail(order.user.email);
     }
-  }, [
-    orderId,
-    order,
-    successPay,
-    verifiedPayment,
-    history,
-    dispatch,
-    successOutForDelivery,
-    userInfo,
-  ]);
+  }, [orderId, order, dispatch, successPay, successOutForDelivery, userInfo]);
 
-  //updated delivered handler
+  //submit payment using paypal
+  const successPaymentHandler = (e) => {
+    e.preventDefault();
+    dispatch(payOrderAction(orderId));
+  };
+
+  //update delivered handler
   const deliverHandler = () => {
     dispatch(deliveredAction(order));
   };
 
-  //updated out fo delivery handler
+  //update out for delivery handler
   const outForDeliveryHandler = () => {
     dispatch(outForDeliveryAction(order));
   };
 
-  //paystack integration
-  const config = {
-    reference: new Date().getTime(),
+  const componentProps = {
     email,
     amount,
-    publicKey,
-  };
-
-  // handle paysatck success action
-  const handlePaystackSuccessAction = (reference) => {
-    if (reference) {
-      verifyTransaction(reference.reference, userInfo.token)
-        .then((response) => {
-          if (response.data.status === "success") {
-            setVerifiedPayment(true);
-          }
-        })
-        .catch((err) => console.log("err", err));
-    }
-  };
-
-  // handle paystack close action
-  const handlePaystackCloseAction = () => {
-    console.log("closed");
-  };
-
-  const componentProps = {
-    ...config,
-    text: "Pay Now",
-    onSuccess: (reference) => {
-      handlePaystackSuccessAction(reference);
+    metadata: {
+      name,
     },
-    onClose: handlePaystackCloseAction,
+    publicKey,
+    text: "Pay Now",
+    onSuccess: () =>
+      alert("Thanks for doing business with us! Come back soon!!"),
+    onClose: () => alert("Wait! Don't leave :("),
   };
+
   return loading ? (
     showLoading()
   ) : error ? (
     showErrorMessage(error)
   ) : (
     <div className="container">
+      {console.log("amount", amount)}
+      {console.log("name", name)}
       <Meta title={"Order Details"} />
       <h1>Order {order._id}</h1>{" "}
       <Row>
@@ -217,8 +186,7 @@ const OrderScreen = ({ match, history }) => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x <span>&#8358;</span> {item.price} ={" "}
-                          <span>&#8358;</span> {item.qty * item.price}
+                          {item.qty} x ${item.price} = ${item.qty * item.price}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -237,43 +205,32 @@ const OrderScreen = ({ match, history }) => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>
-                    <span>&#8358;</span> {order.itemsPrice}
-                  </Col>
+                  <Col>${order.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping </Col>
-                  <Col>
-                    <span>&#8358;</span> {order.shippingPrice}
-                  </Col>
+                  <Col>${order.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>
-                    <span>&#8358;</span> {order.taxPrice}
-                  </Col>
+                  <Col>${order.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>
-                    <span>&#8358;</span> {Math.round(order.totalPrice)}
-                  </Col>
+                  <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
               {!order.isPaid && userInfo._id === order.user._id && (
                 <ListGroup.Item>
                   {loadingPay && showLoading()}
 
-                  <PaystackButton
-                    {...componentProps}
-                    className="paystack-button"
-                  />
+                  <PaystackButton {...componentProps} />
                 </ListGroup.Item>
               )}
               {loadingOutForDelivery && showLoading()}
@@ -314,5 +271,4 @@ const OrderScreen = ({ match, history }) => {
     </div>
   );
 };
-
-export default OrderScreen;
+export default PaystackCheckout;

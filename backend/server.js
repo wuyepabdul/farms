@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import https from "https";
 import dbConnection from "./config/connection.js";
 import productRoute from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -37,8 +38,9 @@ app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
 });
 
-// app.use(notFound);
-// app.use(errorHandler);
+app.get("/api/config/paystack", (req, res) => {
+  res.send({ publicKey: process.env.PAYSTACK_PUBLIC_KEY });
+});
 
 /* **************************************************SERVER CONNECTION********************************* */
 const port = process.env.PORT || 5000;

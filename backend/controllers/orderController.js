@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import { verifyTransaction } from "../apiCalls/paystack/verifyTransaction.js";
 import Order from "../models/orderModel.js";
 
 // @desc Create new Order
@@ -96,6 +97,18 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     // handle error
     console.log("updateOrderToPaid error", error.message);
     res.status(500).json({ message: "Server error, try again later" });
+  }
+});
+
+// @desc verify transaction
+// @route GET /api/orders/verify
+// @access Private
+export const verifyTransactionController = asyncHandler(async (req, res) => {
+  try {
+    const { data } = await verifyTransaction(req.params.trans_ref);
+    res.json(data);
+  } catch (error) {
+    console.log("error", error.message);
   }
 });
 

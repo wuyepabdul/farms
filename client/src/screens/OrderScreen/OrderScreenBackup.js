@@ -1,12 +1,13 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
-import { PaystackButton } from "react-paystack";
 import { useDispatch, useSelector } from "react-redux";
+import { PayPalButton } from "react-paypal-button-v2";
 import { Link } from "react-router-dom";
 import { showLoading } from "../../helpers/loading";
-import Meta from "../../components/Meta/Meta";
 import {
   showErrorMessage,
+  showNoDataError,
   showPendingMessage,
   showSuccessMessage,
 } from "../../helpers/message";
@@ -15,22 +16,20 @@ import {
   getOrderDetailsAction,
   outForDeliveryAction,
   payOrderAction,
-  verifyTransactionAction,
 } from "../../redux/actions/orderActions";
-import { verifyTransaction } from "../../api/flutterwave";
+import {
+  ORDER_DELIVERED_RESET,
+  ORDER_OUT_FOR_DELIVERY_RESET,
+  ORDER_PAY_RESET,
+} from "../../redux/constants/orderConstants";
 
-const OrderScreen = ({ match, history }) => {
+import Meta from "../../components/Meta/Meta";
+
+const OrderScreenBackup = ({ match, history }) => {
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
-  //public Key
-  const publicKey = process.env.REACT_APP_PAYSTACK_PUBLIC_KEY;
-
-  // set component states
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
-  const [verifiedPayment, setVerifiedPayment] = useState(false);
+  const [sdkReady, setSdkReady] = useState(false);
 
   // get order details from store
   const orderDetails = useSelector((state) => state.orderDetails);
@@ -41,8 +40,10 @@ const OrderScreen = ({ match, history }) => {
   const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
 
   const orderOutForDelivery = useSelector((state) => state.orderOutForDelivery);
-  const { loading: loadingOutForDelivery, success: successOutForDelivery } =
-    orderOutForDelivery;
+  const {
+    loading: loadingOutForDelivery,
+    success: successOutForDelivery,
+  } = orderOutForDelivery;
 
   // get loggedIn usr info
   const userLogin = useSelector((state) => state.userLogin);
@@ -63,36 +64,68 @@ const OrderScreen = ({ match, history }) => {
     );
   }
 
-  //re-rendering conditions
   useEffect(() => {
     if (userInfo === undefined) {
       history.push("/login");
     }
-    // check if order is not loaded
-    if (!order || (order && order._id !== orderId)) {
+    const addPayPalScript = async () => {
+      const {
+        data: { clientId },
+      } = await axios.get("/api/config/paypal");
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+      script.async = true;
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      document.body.appendChild(script); // adds scripts as the last child in the body of our html
+    };
+    if (
+      !order ||
+      successPay ||
+      successOutForDelivery ||
+      (order && order._id !== orderId)
+    ) {
+      //prevents infinite ORDER_DETAILS_REQUEST and ORDER_DETAILS_SUCCESS loop in redux
+      dispatch({ type: ORDER_PAY_RESET });
+      dispatch({ type: ORDER_DELIVERED_RESET });
+      dispatch({ type: ORDER_OUT_FOR_DELIVERY_RESET });
+
+      //order && order._id !== orderId means order exist but
+      //order.id does not equal to orderID(url id)
+
+      //this means if order is not loaded, load the order by dispatching
+      // getOrderDetails action or if payment is successful dispatch getDetailsOrder
+
       dispatch(getOrderDetailsAction(orderId));
     } else {
       //we have order at this point
-      if (verifiedPayment) {
-        dispatch(payOrderAction(orderId));
-        window.location.reload();
-        setVerifiedPayment(false);
+      if (!order.isPaid) {
+        if (!window.paypal) {
+          addPayPalScript();
+        } else {
+          //we have an unpaid order and paypal is already loaded
+          setSdkReady(true);
+        }
       }
-
-      setAmount(Math.round(order.totalPrice));
-      setName(order.user.name);
-      setEmail(order.user.email);
     }
   }, [
     orderId,
     order,
-    successPay,
-    verifiedPayment,
-    history,
+    sdkReady,
     dispatch,
+    successPay,
+    sdkReady,
     successOutForDelivery,
     userInfo,
   ]);
+
+  //submit payment using paypal
+  const successPaymentHandler = (paymentResult) => {
+    console.log(paymentResult);
+    dispatch(payOrderAction(orderId, paymentResult));
+  };
 
   //updated delivered handler
   const deliverHandler = () => {
@@ -104,40 +137,6 @@ const OrderScreen = ({ match, history }) => {
     dispatch(outForDeliveryAction(order));
   };
 
-  //paystack integration
-  const config = {
-    reference: new Date().getTime(),
-    email,
-    amount,
-    publicKey,
-  };
-
-  // handle paysatck success action
-  const handlePaystackSuccessAction = (reference) => {
-    if (reference) {
-      verifyTransaction(reference.reference, userInfo.token)
-        .then((response) => {
-          if (response.data.status === "success") {
-            setVerifiedPayment(true);
-          }
-        })
-        .catch((err) => console.log("err", err));
-    }
-  };
-
-  // handle paystack close action
-  const handlePaystackCloseAction = () => {
-    console.log("closed");
-  };
-
-  const componentProps = {
-    ...config,
-    text: "Pay Now",
-    onSuccess: (reference) => {
-      handlePaystackSuccessAction(reference);
-    },
-    onClose: handlePaystackCloseAction,
-  };
   return loading ? (
     showLoading()
   ) : error ? (
@@ -217,8 +216,7 @@ const OrderScreen = ({ match, history }) => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x <span>&#8358;</span> {item.price} ={" "}
-                          <span>&#8358;</span> {item.qty * item.price}
+                          {item.qty} x ${item.price} = ${item.qty * item.price}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -237,43 +235,38 @@ const OrderScreen = ({ match, history }) => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>
-                    <span>&#8358;</span> {order.itemsPrice}
-                  </Col>
+                  <Col>${order.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping </Col>
-                  <Col>
-                    <span>&#8358;</span> {order.shippingPrice}
-                  </Col>
+                  <Col>${order.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>
-                    <span>&#8358;</span> {order.taxPrice}
-                  </Col>
+                  <Col>${order.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>
-                    <span>&#8358;</span> {Math.round(order.totalPrice)}
-                  </Col>
+                  <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
               {!order.isPaid && userInfo._id === order.user._id && (
                 <ListGroup.Item>
                   {loadingPay && showLoading()}
-
-                  <PaystackButton
-                    {...componentProps}
-                    className="paystack-button"
-                  />
+                  {!sdkReady ? (
+                    showLoading()
+                  ) : (
+                    <PayPalButton
+                      amount={order.totalPrice}
+                      onSuccess={successPaymentHandler}
+                    />
+                  )}
                 </ListGroup.Item>
               )}
               {loadingOutForDelivery && showLoading()}
@@ -315,4 +308,4 @@ const OrderScreen = ({ match, history }) => {
   );
 };
 
-export default OrderScreen;
+export default OrderScreenBackup;

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { showLoading } from "../../helpers/loading";
 import { showErrorMessage } from "../../helpers/message";
 import { listTopProductsAction } from "../../redux/actions/productActions";
+import Categories from "../Categories/Categories";
 import "./carouselSlide.css";
 
 const CarouselSlide = () => {
@@ -22,33 +23,9 @@ const CarouselSlide = () => {
     <div>
       <h4>Top Products</h4>
       <Row>
-        <Col sm={2}>
-          <Nav className="flex-column">
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="first">Category</Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Col>
+        <Col sm={3}></Col>
 
-        <Col sm={8}>
+        <Col sm={7}>
           {loading ? (
             showLoading()
           ) : error ? (

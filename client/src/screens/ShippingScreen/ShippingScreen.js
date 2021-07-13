@@ -29,10 +29,6 @@ const ShippingScreen = ({ history }) => {
   const { userInfo } = userLogin;
 
   useEffect(() => {
-    console.log(
-      "shippInfo",
-      JSON.parse(localStorage.getItem("shippingAddress"))
-    );
     if (userInfo === null) {
       history.push("/login");
     }

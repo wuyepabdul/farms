@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Row, Col } from "react-bootstrap";
-import "./home.css";
+import { makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import Product from "../../components/Product/Product";
 import Meta from "../../components/Meta/Meta";
 import CarouselSlide from "../../components/Carousel/CarouselSlide";
@@ -9,9 +10,21 @@ import { listProductsAction } from "../../redux/actions/productActions";
 import { showLoading } from "../../helpers/loading";
 import { showErrorMessage } from "../../helpers/message";
 import Paginate from "../../components/Paginate/Paginate";
-import Categories from "../../components/Categories/Categories";
 
-const HomeScreen = ({ match }) => {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  },
+}));
+
+const Landing = ({ match }) => {
+  const classes = useStyles();
+
   const productList = useSelector((state) => state.productList);
   const { loading, error, products, page, pages } = productList;
 
@@ -25,33 +38,19 @@ const HomeScreen = ({ match }) => {
   }, [dispatch, keyword, pageNumber]);
 
   return (
-    <div className="container">
+    <div className={classes.root}>
       <Meta />
-      <Categories />
       {!keyword && <CarouselSlide />}
-      <h1>Latest Products</h1>
-      {loading ? (
-        showLoading()
-      ) : error ? (
-        showErrorMessage(error)
-      ) : (
-        <>
-          <Row>
-            {products.map((product) => (
-              <Col key={product._id} xs={12} sm={6} md={6} lg={4} xl={3}>
-                <Product product={product} />
-              </Col>
-            ))}
-          </Row>
-          <Paginate
-            pages={pages}
-            page={page}
-            keyword={keyword ? keyword : ""}
-          />
-        </>
-      )}
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={3}>
+          <Paper className={classes.paper}>xs=12 sm=6</Paper>
+        </Grid>
+        <Grid item xs={12} sm={9}>
+          <Paper className={classes.paper}>xs=12 sm=6</Paper>
+        </Grid>
+      </Grid>
     </div>
   );
 };
 
-export default HomeScreen;
+export default Landing;

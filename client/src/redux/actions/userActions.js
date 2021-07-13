@@ -127,42 +127,40 @@ export const getUserDetailsAction = (id) => async (dispatch, getState) => {
 };
 
 // update user profile action
-export const updateUserProfileAction = (userData) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
+export const updateUserProfileAction =
+  (userData) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
 
-    // get user details from redux store
-    const {
-      userLogin: { userInfo },
-    } = getState();
+      // get user details from redux store
+      const {
+        userLogin: { userInfo },
+      } = getState();
 
-    // to send content type and set headers
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
+      // to send content type and set headers
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
 
-    // send request
-    const { data } = await axios.put("/api/users/profile", userData, config);
+      // send request
+      const { data } = await axios.put("/api/users/profile", userData, config);
 
-    dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
-  } catch (error) {
-    // handle error
-    console.log("updateUserProfileAction error", error.message);
-    dispatch({
-      type: USER_UPDATE_PROFILE_FAIL,
-      payload:
-        error.response.data && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
-  }
-};
+      dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
+    } catch (error) {
+      // handle error
+      console.log("updateUserProfileAction error", error.message);
+      dispatch({
+        type: USER_UPDATE_PROFILE_FAIL,
+        payload:
+          error.response.data && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };
 
 //list all users action
 export const listUsersAction = () => async (dispatch, getState) => {
